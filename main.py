@@ -1,45 +1,45 @@
 from flask import Flask, request, abort
 
-    from linebot import (
-        LineBotApi, WebhookHandler
-    )
-    from linebot.exceptions import (
-        InvalidSignatureError
-    )
-    from linebot.models import (
-        MessageEvent, TextMessage, TextSendMessage,
-    )
+from linebot import (
+    LineBotApi, WebhookHandler
+)
+from linebot.exceptions import (
+    InvalidSignatureError
+)
+from linebot.models import (
+    MessageEvent, TextMessage, TextSendMessage,
+)
 
-    app = Flask(__name__)
+app = Flask(__name__)
 
-    line_bot_api = LineBotApi('YOUR_CHANNEL_ACCESS_TOKEN')
-    handler = WebhookHandler('YOUR_CHANNEL_SECRET')
-
-
-    @app.route("/callback", methods=['POST'])
-    def callback():
-        # get X-Line-Signature header value
-        signature = request.headers['X-Line-Signature']
-
-        # get request body as text
-        body = request.get_data(as_text=True)
-        app.logger.info("Request body: " + body)
-
-        # handle webhook body
-        try:
-            handler.handle(body, signature)
-        except InvalidSignatureError:
-            abort(400)
-
-        return 'OK'
+line_bot_api = LineBotApi('5/rYAKugU/kMT+Qx9IUmRNHLCqiZ4YaS8MKsbIiW0o+21qFgWB+QcGc/2cWdJIa03saiLOBBo02rbhDsZCOs/BffOqDYRmLWkpP4o8dsl5/qSs1cr0tGg6g5bhlUJvrdkrM1LVBrvJHdw0SpyWSvRAdB04t89/1O/w1cDnyilFU=')
+handler = WebhookHandler('d3d6b209076ef8a4f9f829727ce8f3cb')
 
 
-    @handler.add(MessageEvent, message=TextMessage)
-    def handle_message(event):
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=event.message.text))
+@app.route("/callback", methods=['POST'])
+def callback():
+    # get X-Line-Signature header value
+    signature = request.headers['X-Line-Signature']
+
+    # get request body as text
+    body = request.get_data(as_text=True)
+    app.logger.info("Request body: " + body)
+
+    # handle webhook body
+    try:
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        abort(400)
+
+    return 'OK'
 
 
-    if __name__ == "__main__":
-        app.run()
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=event.message.text))
+
+
+if __name__ == "__main__":
+    app.run()
